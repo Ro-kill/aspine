@@ -791,7 +791,11 @@ function responseCallbackPartial(response) {
 
       tableData.currentTermData = parseTableData(response.classes);
       
-      tableData.terms[currentTerm] = parseTableData(response.classes);
+      let temp_term_data = parseTableData(response.classes);
+      tableData.terms[currentTerm].classes = temp_term_data.classes;
+      tableData.terms[currentTerm].GPA = temp_term_data.calcGPA;
+      tableData.terms[currentTerm].calcGPA = parseTableData(response.classes).calcGPA;
+
 
 
       if (currentTerm == 'current') {
@@ -812,6 +816,7 @@ function responseCallbackPartial(response) {
       $("#classesTable").show();
 
       classesTable.setData(response.classes); //set data of classes table to the tableData property of the response json object
+      classesTable.redraw();
 
       termsReset[currentTerm] = JSON.parse(JSON.stringify(tableData.terms[currentTerm]));
 
