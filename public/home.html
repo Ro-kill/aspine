@@ -2,6 +2,16 @@
 <html lang="en">
     <head>
 
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+    <!-- Firechat -->
+    <link rel="stylesheet" href="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.css" />
+    <script src="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.js"></script>
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-149290199-1"></script>
     <script>
@@ -20,6 +30,98 @@
 
       <!--gtag('config', 'UA-138977655-1');-->
     <!--</script>-->
+
+
+    <script>
+		
+	    var firebaseConfig = {
+	       apiKey: "AIzaSyBdmLyMLvm76_v28O13AFg3m5xrSV9uciw",
+	       authDomain: "aspine-2bae6.firebaseapp.com",
+	       databaseURL: "https://aspine-2bae6.firebaseio.com",
+	       projectId: "aspine-2bae6",
+	       storageBucket: "aspine-2bae6.appspot.com",
+	       messagingSenderId: "228269869217",
+	       appId: "1:228269869217:web:1bfb40a72ab1b0d16088e0",
+	       measurementId: "G-CK8CM2GP56"
+	     };
+
+	       // Initialize Firebase
+	       firebase.initializeApp(firebaseConfig);
+		
+		
+		
+      function login() {
+        // Log the user in via Twitter
+		  var provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithPopup(provider).catch(function(error) {
+          console.log("Error authenticating user:", error);
+        });
+      }
+
+      firebase.auth().onAuthStateChanged(function(user) {
+        // Once authenticated, instantiate Firechat with the logged in user
+        if (user) {
+          initChat(user);
+		  
+          var className = "AP Physics C";
+		  
+		  var chatRef = firebase.database().ref("chat");
+  		  var chat = new Firechat(chatRef); 
+  
+		//  chat.getRoom("-M0YINzXVeJcN-1SIJVL",function(data) {console.log(data)});
+  			//chat.enterRoom("-M0YINzXVeJcN-1SIJVL");
+			
+		  /*  setTimeout(function() {
+				chat.enterRoom('-M0YINzXVeJcN-1SIJVL');
+		           }, 500);*/
+			
+  //chat.createRoom("AAA","public",function(roomId){console.log("OK"+roomId); });
+  chat.getRoomList(function(roomId){
+	 console.log(roomId);
+	  var strBuilder = [];
+	  
+	  var foundRoom = false;
+	  for(key in roomId) {
+		  var foundRoomName = roomId[key].name;
+		  console.log(foundRoomName);
+		  if(className === foundRoomName) {
+			  foundRoom = true;
+			  console.log(key);
+			  console.log("EXISTS");
+			  chat.enterRoom(key);
+		  }
+		  else {
+			 // console.log(foundRoomName + " Is not right");
+		  } 
+		 
+	  	}
+		
+		if(foundRoom == false) {//No Rooms Exist, must create one!
+			
+		    chat.createRoom(className,"public",function(roomId){console.log("OK"+roomId);});
+			
+		}
+			
+	
+  });
+	  
+        }
+      });
+
+      function initChat(user) {
+        // Get a Firebase Database ref
+        var chatRef = firebase.database().ref("chat");
+
+        // Create a Firechat instance
+        var chat = new FirechatUI(chatRef, document.getElementById("firechat-wrapper"));
+
+        // Set the Firechat user
+        chat.setUser(user.uid, user.displayName);
+						
+		
+      }
+    </script>
+
 
 
         <title>Aspine | CRLS Student Dashboard</title>
@@ -87,6 +189,7 @@
             <button class="tablinks" onclick="openTab(event, 'recent')">Recent Activity</button>
             <button class="tablinks" onclick="openTab(event, 'schedule')">Schedule</button>
             <button class="tablinks" onclick="openTab(event, 'clock')">Clock</button>
+		    
             <!--<button class="tablinks" onclick="openTab(event, 'calendar-tab')">Calendar</button>-->
             <!--<button class="tablinks" onclick="openTab(event, 'reports')">Reports</button>-->
             <button class="tablinks" onclick="location.href='/logout'" id="logout">Logout</button>
@@ -101,7 +204,11 @@
               </select>
             </div>
         </div>
-
+		    <div id="firechat-wrapper" style='border-width: 5px'>
+		      <button onclick="login('google');">Login with Google</button>
+			  
+		    </div>
+			
         <!--<div id="loader" class="modal" style="background-color: rgba(0,0,0,0.0); padding-top: 300px; display: inline-block;">-->
 
           <!--<div id="loader_modal_content" class="model-content" style=" width: 500px; height: 150px; margin: auto;">-->

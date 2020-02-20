@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+	
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+    <!-- Firechat -->
+    <link rel="stylesheet" href="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.css" />
+    <script src="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.js"></script>
+	
+</head>
+<body>
+ <!--Using NPM FIREBASE INSTALL for libraries i think-->
+    <script>
+		
+	    var firebaseConfig = {
+	       apiKey: "AIzaSyBdmLyMLvm76_v28O13AFg3m5xrSV9uciw",
+	       authDomain: "aspine-2bae6.firebaseapp.com",
+	       databaseURL: "https://aspine-2bae6.firebaseio.com",
+	       projectId: "aspine-2bae6",
+	       storageBucket: "aspine-2bae6.appspot.com",
+	       messagingSenderId: "228269869217",
+	       appId: "1:228269869217:web:1bfb40a72ab1b0d16088e0",
+	       measurementId: "G-CK8CM2GP56"
+	     };
+
+	       // Initialize Firebase
+	       firebase.initializeApp(firebaseConfig);
+		
+		
+		
+      function login() {
+        // Log the user in via Twitter
+		  var provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithPopup(provider).catch(function(error) {
+          console.log("Error authenticating user:", error);
+        });
+      }
+
+      firebase.auth().onAuthStateChanged(function(user) {
+        // Once authenticated, instantiate Firechat with the logged in user
+        if (user) {
+          initChat(user);
+        }
+      });
+
+      function initChat(user) {
+        // Get a Firebase Database ref
+        var chatRef = firebase.database().ref("chat");
+
+        // Create a Firechat instance
+        var chat = new FirechatUI(chatRef, document.getElementById("firechat-wrapper"));
+
+        // Set the Firechat user
+        chat.setUser(user.uid, user.displayName);
+      }
+    </script>
+
+    
+  </body>
+</html>
